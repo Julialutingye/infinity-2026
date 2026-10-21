@@ -4,25 +4,51 @@ color sensors, then prints a summary of any problems.
 
 Run it with F5. Output appears in the VS Code terminal.
 This file does not import robot_config, because robot_config crashes if a
-device is unplugged. Keep EXPECTED below in sync with robot_config.py.
+device is unplugged. Instead it reads the connected hub's name and loads the
+matching profile from robot_profiles.py (as robot_config.py does) to decide
+what should be plugged into each port.
 """
 
 from pybricks import version
 from pybricks.hubs import PrimeHub
 from pybricks.iodevices import PUPDevice
-from pybricks.parameters import Axis, Button, Color, Direction, Port
+from pybricks.parameters import Button, Color, Port
 from pybricks.pupdevices import ColorSensor, Motor
 from pybricks.tools import wait
 
-# What robot_config.py says is plugged into each port
-EXPECTED = {
-    Port.A: ("DRIVE_RIGHT", "motor", Direction.CLOCKWISE),
-    Port.B: ("RIGHT_ATTACHMENT", "motor", Direction.COUNTERCLOCKWISE),
-    Port.C: ("RIGHT_COLOR_SENSOR", "color", None),
-    Port.D: ("LEFT_ATTACHMENT", "motor", Direction.COUNTERCLOCKWISE),
-    Port.E: ("DRIVE_LEFT", "motor", Direction.COUNTERCLOCKWISE),
-    Port.F: ("LEFT_COLOR_SENSOR", "color", None),
-}
+from robot_profiles import DEFAULT_PROFILE, PROFILES
+
+ALL_PORTS = (Port.A, Port.B, Port.C, Port.D, Port.E, Port.F)
+
+# Pick the profile for the connected hub, the same way robot_config.py does.
+HUB_NAME = PrimeHub().system.name()
+if HUB_NAME in PROFILES:
+    PROFILE_NAME = HUB_NAME
+else:
+    PROFILE_NAME = DEFAULT_PROFILE
+PROFILE = PROFILES[PROFILE_NAME]
+
+
+def build_expected(profile):
+    """Builds {port: (name, kind, direction)} from a robot_profiles entry.
+    Ports the profile doesn't use are (None, None, None)."""
+    expected = {port: (None, None, None) for port in ALL_PORTS}
+    for key, name in (("drive_left", "DRIVE_LEFT"), ("drive_right", "DRIVE_RIGHT"),
+                      ("left_attachment", "LEFT_ATTACHMENT"),
+                      ("right_attachment", "RIGHT_ATTACHMENT")):
+        config = profile.get(key)
+        if config:
+            expected[config["port"]] = (name, "motor", config["direction"])
+    for key, name in (("left_color_sensor", "LEFT_COLOR_SENSOR"),
+                      ("right_color_sensor", "RIGHT_COLOR_SENSOR")):
+        port = profile.get(key)
+        if port:
+            expected[port] = (name, "color", None)
+    return expected
+
+
+# What the hub's profile in robot_profiles.py says is plugged into each port
+EXPECTED = build_expected(PROFILE)
 
 DEVICE_NAMES = {
     38: "BOOST motor",
@@ -40,7 +66,9 @@ DEVICE_NAMES = {
 MOTOR_IDS = (38, 46, 47, 48, 49, 65, 75, 76)
 COLOR_SENSOR_ID = 61
 
-HUB = PrimeHub(top_side=Axis.Z, front_side=Axis.Y)
+# The orientation can only be set when the hub is created, so create it again
+# now that the profile is known.
+HUB = PrimeHub(top_side=PROFILE["hub_top_side"], front_side=PROFILE["hub_front_side"])
 PROBLEMS = []
 
 
@@ -59,8 +87,14 @@ def wait_for_right_button():
 
 def check_hub():
     print("=== HUB ===")
-    print("  Name:", HUB.system.name())
+    print("  Name:", HUB_NAME)
     print("  Pybricks firmware:", version)
+    if HUB_NAME in PROFILES:
+        print("  Robot profile:", PROFILE_NAME)
+    else:
+        print("  Robot profile:", PROFILE_NAME, "(default; no profile named", HUB_NAME + ")")
+        problem("No profile for hub '" + HUB_NAME + "' in robot_profiles.py. Expected ports below are for "
+                + DEFAULT_PROFILE + ".")
 
 
 def check_battery():
@@ -97,7 +131,7 @@ def check_ports():
     """Finds what is plugged into each port and compares it to robot_config"""
     print("=== PORTS ===")
     found = {}
-    for port in (Port.A, Port.B, Port.C, Port.D, Port.E, Port.F):
+    for port in ALL_PORTS:
         name, kind, _ = EXPECTED[port]
         try:
             device_id = PUPDevice(port).info()["id"]
@@ -110,6 +144,8 @@ def check_ports():
             print(" ", port, ":", DEVICE_NAMES.get(device_id, "unknown device " + str(device_id)))
         found[port] = device_id
 
+        if kind is None:
+            continue  # the profile doesn't use this port
         if device_id is None:
             problem(str(port) + " should have " + name + " but nothing is plugged in (check the cable).")
         elif kind == "motor" and device_id not in MOTOR_IDS:
