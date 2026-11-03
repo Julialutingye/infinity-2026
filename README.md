@@ -29,6 +29,11 @@ New to the team? Read these in order. No Python experience is needed.
 3. Copy `M1_DroneSurvey.py`, edit it, and press **F5** to test your run.
 4. When it works, add it to the menu in `robot.py`.
 
+For 2026, name mission files `M1_MissionName.py`, `M2_MissionName.py`, and so
+on. A run that completes multiple missions uses their numbers together,
+such as `M1_M2.py` for missions 1 and 2. Each file is one selectable run in
+the hub menu once registered in `robot.py`.
+
 ## Project layout
 
 | File / folder | Purpose |

@@ -6,8 +6,7 @@ from library import set_drivebase
 async def run3():
     LEFT_ATTACHMENT.reconfigure(Direction.COUNTERCLOCKWISE,gears=[12,36])
     RIGHT_ATTACHMENT.reconfigure(Direction.CLOCKWISE,gears=[28,36])
-    await set_drivebase()
-    DRIVE_BASE.settings(straight_speed=700, straight_acceleration=700)
+    set_drivebase(straight_speed=700, straight_acceleration=700)
     DRIVE_BASE.use_gyro(True)
     await wait(100)
 

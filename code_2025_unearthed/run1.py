@@ -10,7 +10,7 @@ DRIVE_BASE.settings(straight_speed=700, straight_acceleration=700)
 #drive_base_to_heavy_lifting
 async def run1():
     DRIVE_BASE.use_gyro(True) 
-    await set_drivebase()
+    set_drivebase()
     CENTER_ATTACHMENT.reconfigure(positive_direction=Direction.COUNTERCLOCKWISE,
                                   gears=[12,36])
     FRONT_ATTACHMENT.reconfigure(positive_direction=Direction.CLOCKWISE,

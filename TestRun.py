@@ -11,7 +11,7 @@ from robot_config import DRIVE_BASE
 
 
 async def test_run():
-	await set_drivebase()
+	set_drivebase()
 	#print("Driving forward one wheel rotation")
 	#await DRIVE_BASE.straight(ONE_WHEEL_ROTATION)
 	#print("Driving backward one wheel rotation")

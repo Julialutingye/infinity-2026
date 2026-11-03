@@ -8,7 +8,7 @@ from robot_config import DRIVE_BASE, HUB, CENTER_ATTACHMENT
 
 #use this function as a template to define how to drive the base
 async def drive_base_to_heavy_lifting():
-    await set_drivebase()
+    set_drivebase()
     CENTER_ATTACHMENT.reconfigure(positive_direction=Direction.COUNTERCLOCKWISE,
                                   gears=[12,36])
     # Turn on Gyro, drive forward

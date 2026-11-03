@@ -24,6 +24,17 @@ Create a new file in the **main folder** (next to `robot.py`), for example
 
 You can also copy `TestRun.py` or `M1_DroneSurvey.py` and edit the copy.
 
+Use these file names for 2026:
+
+| File name | Purpose |
+|---|---|
+| `M1_DroneSurvey.py` | Mission 1: Drone Survey. |
+| `M2_MissionName.py` | Mission 2, with its mission name. |
+| `M1_M2.py` | One run that completes missions 1 and 2 together. |
+
+Use the same pattern for other mission numbers or combinations. Combined
+runs have their own route and their own menu entry.
+
 ### 2. Use this template
 
 ```python
@@ -35,7 +46,7 @@ from robot_config import DRIVE_BASE
 
 async def run_m2():
     DRIVE_BASE.use_gyro(True)         # use the gyro for accurate turns
-    await set_drivebase()              # start from our standard settings
+    set_drivebase()                  # start from our standard settings
 
     await DRIVE_BASE.straight(500)    # forward 500 mm
     await DRIVE_BASE.turn(90)         # turn right 90 degrees
@@ -51,12 +62,13 @@ if __name__ == "__main__":
 Things to notice:
 
 - The function is `async def` and every robot move has `await` in front.
-- It starts with `use_gyro(True)` and `await set_drivebase()` so each run
+- It starts with `use_gyro(True)` and `set_drivebase()` so each run
   begins the same way.
+- `set_drivebase()` configures settings immediately and does not use `await`.
 - The block at the bottom lets you press **F5** to run this file alone.
   Change `run_m2` there if you rename the function.
-- Give your function a **unique name**, such as `run_m2`. If two files both
-  define `main`, importing both into `robot.py` causes confusion.
+- Give your function a **unique name**, such as `run_m2`, or use an import
+  alias when multiple files define `main` (see the menu examples below).
 
 ### 3. Test it
 
@@ -68,7 +80,8 @@ the robot, read the terminal, and adjust the numbers. See
 
 ## Driving commands
 
-All of these live on `DRIVE_BASE` and need `await`.
+These commands live on `DRIVE_BASE`. Movement commands use `await`;
+settings and queries run immediately.
 
 | Command | What it does |
 |---|---|
@@ -89,10 +102,17 @@ The standard settings (from `robot_config.py`) are fast. For precise moves,
 slow down, then restore the standard settings:
 
 ```python
-DRIVE_BASE.settings(straight_speed=200, straight_acceleration=300)
+set_drivebase(straight_speed=200, straight_acceleration=300)
 await DRIVE_BASE.straight(130)       # slow and careful
-await set_drivebase()                # back to normal speeds
+set_drivebase()                     # back to normal speeds
 ```
+
+`set_drivebase(...)` applies all four settings in one call. Values you leave
+out use the defaults from `robot_config.py`. You can pass all four values
+when a move needs its own settings; no separate reset is needed first.
+
+Use `DRIVE_BASE.settings(...)` directly when you want to change only the
+specified values and keep the other current settings.
 
 The four settings are:
 
@@ -239,7 +259,7 @@ async def lift_arm():
 
 async def run_m2():
     DRIVE_BASE.use_gyro(True)
-    await set_drivebase()
+    set_drivebase()
     LEFT_ATTACHMENT.reconfigure(Direction.COUNTERCLOCKWISE, [12, 36])
 
     await drive_to_mission()
@@ -303,8 +323,8 @@ from the hub buttons without a laptop.
    from M2_Example import run_m2
    ```
 
-3. In `main()`, find the line `# await add_program(run1, '1', Color.GREEN)`
-   and add a line for your run before `await user_interface()`:
+3. In `main()`, add a line for your run after the existing Mission 1 entry
+   and before `await user_interface()`:
 
    ```python
    await add_program(run_m2, '2', Color.WHITE)
@@ -319,10 +339,24 @@ from the hub buttons without a laptop.
    letter. Use the left and right buttons to select it, and the center
    button to start.
 
-> Note that `M1_DroneSurvey.py` names its function `main`. To register it, either
-> rename the function (e.g. `run_m1`) in the file and the bottom block, or
-> import it under another name:
-> `from M1_DroneSurvey import main as run_m1`.
+`M1_DroneSurvey.py` names its function `main`. It is already registered in
+`robot.py` with `from M1_DroneSurvey import main as run_m1`. Use an import
+alias like this when multiple files name their function `main`.
+
+When you create a combined run in `M1_M2.py` with an `async def main()`
+function, register it the same way:
+
+```python
+# At the top of robot.py:
+from M1_M2 import main as run_m1_m2
+
+# Inside robot.py's main(), before user_interface():
+await add_program(run_m1_m2, 'A', Color.BLUE)
+```
+
+The hub menu displays one character, so use a unique digit or letter for
+each run, such as `A` for the combined run. The file can still be named
+`M1_M2.py`.
 
 ---
 
@@ -346,7 +380,7 @@ commit → push → open a pull request.
 
 - [ ] The run works from `robot.py`'s menu, not only from F5.
 - [ ] Every attachment is `reconfigure()`d at the start of the run.
-- [ ] Every run starts with `use_gyro(True)` and `await set_drivebase()`.
+- [ ] Every run starts with `use_gyro(True)` and `set_drivebase()`.
 - [ ] No leftover test code, `return` lines, or commented-out debug moves
       that you don't intend.
 - [ ] Each run's letter and color match the attachment marker.

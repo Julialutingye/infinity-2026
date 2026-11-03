@@ -5,8 +5,7 @@ from robot_config import DRIVE_BASE
 
 async def test_run():
 	DRIVE_BASE.use_gyro(True)
-	await set_drivebase()
-	DRIVE_BASE.settings(
+	set_drivebase(
 		straight_speed=200,
 		straight_acceleration=300,
 		turn_rate=200,

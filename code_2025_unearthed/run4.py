@@ -10,7 +10,7 @@ from pybricks.pupdevices import Motor
 
 #use this function as a template to define how to drive the base
 async def run4():
-    #await set_drivebase()
+    #set_drivebase()
     #LEFT_ATTACHMENT = Motor(Port.D, Direction.CLOCKWISE)
     LEFT_ATTACHMENT.reconfigure(positive_direction=Direction.COUNTERCLOCKWISE,gears=None)
     #LEFT_ATTACHMENT.reconfigure(positive_direction=Direction.COUNTERCLOCKWISE, gears=[12,36])

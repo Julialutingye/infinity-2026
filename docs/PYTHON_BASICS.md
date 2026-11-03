@@ -360,7 +360,7 @@ from robot_config import DRIVE_BASE, LEFT_ATTACHMENT
 # --- A run ---
 async def run_example():
     DRIVE_BASE.use_gyro(True)               # more accurate turns
-    await set_drivebase()                    # our speed settings
+    set_drivebase()                        # our speed settings (no await)
     await DRIVE_BASE.straight(500)          # forward 500 mm
     await DRIVE_BASE.turn(90)               # turn right 90 degrees
     await LEFT_ATTACHMENT.run_angle(300, 180)  # speed 300, turn 180 degrees

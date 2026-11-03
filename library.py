@@ -2,12 +2,20 @@ from pybricks.tools import multitask, run_task, wait
 
 from robot_config import ACCELERATION, DRIVE_BASE, HUB, SPEED, TURN_ACCELERATION, TURN_SPEED
 
-async def set_drivebase():
-    await wait(0)
-    DRIVE_BASE.settings(straight_speed=SPEED)
-    DRIVE_BASE.settings(straight_acceleration=ACCELERATION)
-    DRIVE_BASE.settings(turn_rate=TURN_SPEED)
-    DRIVE_BASE.settings(turn_acceleration=TURN_ACCELERATION)
+def set_drivebase(
+    *,
+    straight_speed=SPEED,
+    straight_acceleration=ACCELERATION,
+    turn_rate=TURN_SPEED,
+    turn_acceleration=TURN_ACCELERATION,
+):
+    """Apply project defaults with optional overrides for this call."""
+    DRIVE_BASE.settings(
+        straight_speed=straight_speed,
+        straight_acceleration=straight_acceleration,
+        turn_rate=turn_rate,
+        turn_acceleration=turn_acceleration,
+    )
 
 async def print_drivebase_settings():
     print('Default drivebase settings that are overridden in the config file')

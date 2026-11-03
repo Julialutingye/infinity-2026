@@ -206,7 +206,7 @@ the real size the robot *uses* comes from the profile.)
 | Attachment doesn't move at all, no error | Missing `await`, or the motor is blocked/stalled by the model |
 | A move gets skipped | Missing `await` |
 | Everything slows down or stutters | Low battery: charge the hub |
-| Works with F5 but not from the menu | Run isn't registered in `robot.py`, or it changes settings and doesn't restore them (call `await set_drivebase()` at the start) |
+| Works with F5 but not from the menu | Run isn't registered in `robot.py`, or it changes settings and doesn't restore them (call `set_drivebase()` at the start) |
 
 ### Still stuck?
 

@@ -70,7 +70,7 @@ async def follow_line(distance_mm, speed=150, target=BLACK, gain=1.2):
 async def demo1():
     """Demo run: find a line, square up on it, then use the gyro and an
     attachment motor from that known position."""
-    await set_drivebase()
+    set_drivebase()
     DRIVE_BASE.use_gyro(True)
     await print_reflection()
 

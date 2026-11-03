@@ -56,7 +56,7 @@ async def teleop():
                 HUB.speaker.beep(700, 400),
                 XBOX.rumble(50, 400),
             )
-            await set_drivebase()
+            set_drivebase()
             break
         else:
             # Check to see if there are any inputs

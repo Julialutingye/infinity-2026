@@ -5,7 +5,7 @@ from library import set_drivebase
 #use this function as a template to define how to drive the base
 async def demo_drive_straight_turn():
     await HUB.speaker.beep(500, 1000) #frequency & duration
-    await set_drivebase()
+    set_drivebase()
     # Turn on Gyro
     DRIVE_BASE.use_gyro(True) 
     await wait(1000) #wait for 1000 ms

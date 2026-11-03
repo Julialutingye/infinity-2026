@@ -7,7 +7,7 @@ from robot_config import DRIVE_BASE
 
 
 async def main():
-    await set_drivebase()
+    set_drivebase()
     await DRIVE_BASE.straight(390)
     await DRIVE_BASE.arc(55, 10)
     await DRIVE_BASE.straight(45)

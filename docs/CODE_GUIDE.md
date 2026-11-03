@@ -46,12 +46,16 @@ Think of it in layers:
 |---|---|
 | `robot_profiles.py` | One entry per hub: motor and sensor ports, motor directions, wheel diameter, axle track, hub orientation. **The only place port numbers live.** |
 | `robot_config.py` | Reads the connected hub's name, loads the matching profile, and creates `HUB`, `DRIVE_BASE`, `LEFT_ATTACHMENT`, `RIGHT_ATTACHMENT`, `LEFT_COLOR_SENSOR`, `RIGHT_COLOR_SENSOR`. Also holds the default speeds (`SPEED`, `ACCELERATION`, `TURN_SPEED`, `TURN_ACCELERATION`). |
-| `library.py` | Shared helpers. `set_drivebase()` applies our default speeds and accelerations. `print_drivebase_settings()` prints the current ones. |
+| `library.py` | Shared helpers. `set_drivebase()` applies default speeds and accelerations with optional overrides. `print_drivebase_settings()` prints the current ones. |
 | `gear_swap_motor.py` | `GearSwapMotor`: an attachment motor that understands gears, so you can say "turn the *final gear* 90°" and it works out how far the *motor* must turn. |
 | `ui.py` | The hub menu: shows a letter and color for each run, and lets you pick and start runs with the hub buttons. |
 | `robot.py` | **The competition program.** Imports every run, registers it with the menu, and starts the menu. Laptops and tablets are not allowed at the table, so this is what runs on the hub. |
 
 ### Runs (the missions)
+
+For 2026, single-mission files use `M1_MissionName.py`, `M2_MissionName.py`,
+and so on. Combined runs use the mission numbers together, such as
+`M1_M2.py`. Each registered run gets its own hub-menu entry.
 
 | File | What it does |
 |---|---|
@@ -203,12 +207,28 @@ is `None` automatically.)
 ## `library.py`
 
 ```python
-await set_drivebase()
+set_drivebase()
 ```
 
 Call this at the start of every run. It sets the drive base to our standard
 speed, acceleration, turn rate, and turn acceleration from `robot_config.py`.
-Any settings you changed earlier are reset.
+Any settings you changed earlier are reset. This is a normal function, so
+call it without `await`.
+
+To use custom settings, pass them in the same call:
+
+```python
+set_drivebase(
+    straight_speed=200,
+    straight_acceleration=300,
+    turn_rate=100,
+    turn_acceleration=300,
+)
+```
+
+Any values you leave out use the defaults from `robot_config.py`, rather
+than the values left by the previous move. There is no need to call
+`set_drivebase()` separately before a call with custom settings.
 
 Why it matters: `DRIVE_BASE.settings(...)` stays in effect until you change it
 again, even into the next run. Calling `set_drivebase()` at the beginning means
@@ -244,7 +264,7 @@ still for a moment; the menu appears when the gyro is ready.
 To add a run to the menu, you import it and add one line in `robot.py`:
 
 ```python
-from M1_DroneSurvey import run_m1            # at the top
+from M1_DroneSurvey import main as run_m1    # at the top
 
 ...
 await add_program(run_m1, '1', Color.GREEN)  # in main(), before user_interface()
@@ -254,6 +274,9 @@ await add_program(run_m1, '1', Color.GREEN)  # in main(), before user_interface(
 parentheses!), the character to show, and the light color. Runs appear in the
 menu in the order you add them. Full steps in
 [Writing Runs](WRITING_RUNS.md#adding-your-run-to-the-menu).
+
+`M1_DroneSurvey` is already registered as menu entry `1`. Add imports and
+menu entries for other missions and combined runs as you create them.
 
 `robot.py` also prints the drive base settings and calls `set_drivebase()`
 once at startup.

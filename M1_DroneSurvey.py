@@ -4,8 +4,7 @@ from robot_config import DRIVE_BASE
 
 async def main():
 	DRIVE_BASE.use_gyro(True)
-	await set_drivebase()
-	DRIVE_BASE.settings(
+	set_drivebase(
 		straight_speed=300,
 		straight_acceleration=300,
 		turn_rate=100,
@@ -16,8 +15,7 @@ async def main():
 	print("Drone off map (20) and Turning left 48 degrees")
 	await DRIVE_BASE.turn(-52)
 	print("Turning opposite 56 degrees")
-	await set_drivebase()
-	DRIVE_BASE.settings(
+	set_drivebase(
 		straight_speed=200,
 		straight_acceleration=300,
 		turn_rate=300,
@@ -26,8 +24,7 @@ async def main():
 	await DRIVE_BASE.turn(65)
 	print("Flipped over (10) and Returning quickly")
 	DRIVE_BASE.use_gyro(False)
-	await set_drivebase()
-	DRIVE_BASE.settings(
+	set_drivebase(
 		straight_speed=800,
 		straight_acceleration=400,
 		turn_rate=200,
