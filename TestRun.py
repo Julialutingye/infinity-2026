@@ -21,11 +21,12 @@ async def test_run():
 		turn_acceleration=600,
 	)
 	DRIVE_BASE.use_gyro(True)
-	await DRIVE_BASE.straight(-660)
-	await DRIVE_BASE.turn(45)
-	await DRIVE_BASE.straight(-300)
-	await DRIVE_BASE.curve(-200, 70)
-	await DRIVE_BASE.straight(800)
+	#RIGHT_ATTACHMENT.dc(100)
+	#await RIGHT_ATTACHMENT.run_angle(300, 300)
+	#await DRIVE_BASE.turn(45)
+	await DRIVE_BASE.straight(200)
+	#await DRIVE_BASE.curve(-200, 70)
+	#await DRIVE_BASE.straight(800)
 	"""
 	
 	await DRIVE_BASE.turn(-60)
